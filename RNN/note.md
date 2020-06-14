@@ -63,6 +63,8 @@ $$
 
 ​		语言本身就具有时间上的先后顺序。当我们理解语言或者说话时，我们都在处理着未知长度的连续输入。就像你也不知道我这句话会讲多久。(反手就是流畅的16个字符)尽管，你确实可以从任意地方看这篇文章，不过大部分情况下都是从头开始(应该不会有人从末尾开始吧？不会吧？不会吧？)。
 
+### 2.1 Elman Networks
+
 ​		首先，我们还是从最简单的RNN的结构——Elman Networks开始讲起。
 
 <img src="C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20200614223837906.png" alt="image-20200614223837906" style="zoom:43%;" />
@@ -78,7 +80,45 @@ $$
 ​	首先，我们定义一些变量。
 
 * 输入序列$x$，$x^{t}$表示序列x中的第t个词。
+
 * $h$为隐层。
+
 * $U$为输入到隐层的映射矩阵。
+
 * $W$为隐层到隐层的矩阵。
+
 * $V$为隐层到输出层的映射矩阵。
+
+  注意，这里的矩阵$W$，$U$和$V$在前向传播过程中是相同的。所以：
+  $$
+  \begin{equation}
+  \begin{aligned}
+  a^{t} &= Wh^{(t-1)}+Ux^{(t)} \\
+  h^{t} &= g(a^{(t)}), \ \ \text{eg.} \ \ h^{t} = \text{tanh}(a^{t}) \\
+  o^{t} &=Vh \\
+  \hat{y} &=\text{softmax}(o^{t})\\
+  L^{(t)} &=-\log{\hat{y}}
+  
+  \end{aligned}
+  \end{equation}
+  $$
+  损失的计算为：
+  $$
+  L(\{x^{(1)},\cdots,x^{(n)}\},\{y\}) = \sum_{t}L^{(t)}
+  $$
+  所以，其实在训练过程中，我们只需要进行迭代处理就可以了，伪代码为：
+
+  ```python
+  def forward():
+      h = [] 
+  	h0 = [0] * hidden_size # 一般情况下，我们初始化隐层的值为0，隐层的长度由训练时定义
+      h.append(h0)
+      for i in range(len(x)):
+          h[1] <- tanh(U*h[i - 1] + Wx[i])
+          o[t] <- V*h[t]
+          y_hat <- softmax(o[t])
+  ```
+
+  
+
+  
